@@ -1,0 +1,19 @@
+{
+	"user": "Mergevos",
+	"repo": "luxury-lane",
+	"entry": "gamemodes/main.pwn",
+	"output": "gamemodes/main.amx",
+	"dependencies": [
+		"openmultiplayer/omp-stdlib"
+	],
+	"local": true,
+	"runtime": {
+		"version": "openmp",
+		"mode": "server",
+		"plugins": [
+			"PySAMP"
+		],
+		"rcon_password": "password",
+		"port": 7777
+	}
+}
