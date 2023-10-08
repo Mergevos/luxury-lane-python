@@ -5,8 +5,16 @@ from functools import wraps
 class Player(BasePlayer):
     _pool: dict[int, BasePlayer] = {}
 
+    _account = None
+
     def __init__(self, player_id):
         super().__init__(player_id)
+
+    def set_account(self, account):
+        self._account = account
+
+    def get_account(self) -> int:
+        return self._account
 
     @classmethod
     def from_pool(cls: BasePlayer, player) -> BasePlayer:
