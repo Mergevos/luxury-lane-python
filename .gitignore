@@ -54,3 +54,7 @@ bans.json
 # dmp files
 
 *.dmp
+
+# pycache
+pysamp/__pycache__
+python/__pycache__
