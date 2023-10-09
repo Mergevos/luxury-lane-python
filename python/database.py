@@ -31,6 +31,7 @@ class Database:
         except Error as e:
             if isinstance(e, mysql.connector.errors.InterfaceError):
                 print("Error: There was a problem with the database connection. Couldn't connect.")
+            
             else:
                 print(f"Error: {e}")
     
@@ -39,12 +40,13 @@ class Database:
     def get_connection(cls):
         if cls._connection is None:
             cls.connect()
+
         return cls._connection
     
     # Executes a query
     @classmethod
-    def get_cursor(cls):
-        return cls._connection.cursor()
+    def get_cursor(cls, as_dictionary=False):
+        return cls._connection.cursor(dictionary=as_dictionary)
 
     # Closes the connection
     @classmethod
@@ -52,6 +54,7 @@ class Database:
         if cls._connection:
             cls._connection.close()
             print('Closed connection')
+
         else:
             print('Not connected')
 
