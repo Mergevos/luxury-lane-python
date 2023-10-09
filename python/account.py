@@ -115,6 +115,7 @@ def handle_age(player: Player, response: int, listitem: int, input: str):
             player.toggle_spectating(False)
             player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
             player.spawn()
+            account.set_sqlid(cursor.lastrowid)
 
         except Exception as e:
             print(f"Error during database insertion: {e}") 
