@@ -153,7 +153,6 @@ def handle_spawn(player: Player):
         account.set_gender(row['account_gender'])
         account.set_age(row['account_age'])
         skin = row['account_skin']
-        print(f'{skin}')
         player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
         player.toggle_spectating(False)
         player.spawn()
