@@ -112,10 +112,9 @@ def handle_age(player: Player, response: int, listitem: int, input: str):
             cursor = Database.get_cursor()
             cursor.execute("INSERT INTO account (account_name, account_email, account_password, account_gender, account_skin, account_age) VALUES (%s, %s, %s, %s, %s, %s)", (player.get_name(), account.get_email(), account.get_password(), account.get_gender(), skin, account.get_age(), ))
             connection.commit()
-            player.toggle_spectating(False)
             player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
-            player.spawn()
             account.set_sqlid(cursor.lastrowid)
+            player.toggle_spectating(False)
 
         except Exception as e:
             print(f"Error during database insertion: {e}") 
@@ -155,9 +154,8 @@ def handle_spawn(player: Player):
         skin = row['account_skin']
         player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
         player.toggle_spectating(False)
-        player.spawn()
-    
-        
+
+     
 # Checking
 @Player.on_request_class
 @Player.using_pool
@@ -170,11 +168,10 @@ def on_player_request_class(player: Player, classid: int):
     
     if row is None:
         Dialog.create(type=3, title='Luxury Lane', content=f'Dobrodosli {player.get_name()}\nDrago nam je da ste dosli na nas server. Da biste nastavili, molimo Vas unesite Vasu zeljenu lozinku.', button_1='Unesi', button_2='Izlaz', on_response=register_response).show(player)
-    
+        pass
     else:
         account = player.get_account()
         account.set_password(row[0])
         Dialog.create(type=3, title='Luxury Lane', content=f'Dobrodosli {player.get_name()}\nDrago nam je da ste dosli na nas server. Da biste nastavili, molimo Vas unesite Vasu sacuvanu lozinku.', button_1='Unesi', button_2='Izlaz', on_response=login_response).show(player)
     
     return 0
-
