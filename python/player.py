@@ -1,21 +1,17 @@
 from pysamp.player import Player as BasePlayer
 from functools import wraps
+from python.permissions import roles
 
 
 class Player(BasePlayer):
     _pool: dict[int, BasePlayer] = {}
 
-    _account = None
+    account = None
+    role = None
 
     def __init__(self, player_id):
         super().__init__(player_id)
-
-    def set_account(self, account):
-        self._account = account
-
-    def get_account(self) -> int:
-        return self._account
-
+    
     @classmethod
     def from_pool(cls: BasePlayer, player) -> BasePlayer:
         if isinstance(player, int):
@@ -44,7 +40,6 @@ class Player(BasePlayer):
             return func(*args, **kwargs)
 
         return from_pool
-    
 
 @Player.on_disconnect
 @Player.using_pool
