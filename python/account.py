@@ -13,42 +13,36 @@ GENDER_FEMALE = 2
 
 @dataclass
 class Account:
-    _sqlid = None
-    _password = None
-    _age = None
+    sqlid = None
+    password = None
+    age = None
     _gender = None
     _email = None
 
-    def set_password(self, password: str):
-        self._password = password
-        
-    def get_password(self) -> str:
-        return self._password
-
-    def set_email(self, email: str):
-        self._email = email
-        
-    def get_email(self) -> str:
+    @property
+    def email(self) -> str:
         return self._email
-    
-    def set_age(self, age: int):
-        self._age = age
-    
-    def get_age(self) -> int:
-        return self._age
 
-    def set_sqlid(self, sqlid: int):
-        self._sqlid = sqlid
+    @email.setter
+    def email(self, email: str):
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(pattern, email):
+            raise ValueError("Invalid email format")
+        else:
+            self._email = email
+        
+    @property
+    def gender(self) -> int:
+        return self._gender
     
-    def get_sqlid(self) -> int:
-        return self._sqlid
-
-    def set_gender(self, gender: int):
+    @gender.setter
+    def gender(self, gender: int):
         if gender in (GENDER_MALE, GENDER_FEMALE):
             self._gender = gender
+        else:
+            raise ValueError("Invalid gender input")
     
-    def get_gender(self) -> int:
-        return self._gender
+
 
 
 # Register
@@ -61,8 +55,8 @@ def register_response(player: Player, response: int, listitem: int, input: str):
         
         salt = bcrypt.gensalt()  # Generate a random salt
         hashed = bcrypt.hashpw(input.encode("utf-8"), salt)  # Hash the password
-        account = player.get_account()
-        account.set_password(hashed)
+        account = player.account
+        account.password = hashed
         Dialog.create(type=0, title='Luxury Lane', content='Nastavite sa registracijom molim Vas. Odaberite Vas pol.', button_1='Musko', button_2='Zensko', on_response=gender_select).show(player)
    
     else:
@@ -70,50 +64,50 @@ def register_response(player: Player, response: int, listitem: int, input: str):
 
 @Player.using_pool
 def gender_select(player: Player, response: int, listitem: int, input: str):
-    account = player.get_account()
+    account = player.account
 
     if response:
-        account.set_gender(GENDER_MALE)
+        account.gender = GENDER_MALE
         Dialog.create(type=1, title='Luxury Lane', content='Nastavite sa registracijom molim Vas. Molimo unesite Vas email.', button_1='Unesi', button_2='Izlaz', on_response=email_input).show(player)
    
     else:
-        account.set_gender(GENDER_FEMALE)
+        account.gender = GENDER_FEMALE
         Dialog.create(type=1, title='Luxury Lane', content='Nastavite sa registracijom molim Vas. Molimo unesite Vas email.', button_1='Unesi', button_2='Izlaz', on_response=email_input).show(player)
 
 
 @Player.using_pool
 def email_input(player: Player, response: int, listitem: int, input: str):
-    account = player.get_account()
+    account = player.account
 
     if response:
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         
-        if not re.match(pattern, input):
+        try:
+            account.email = input
+        except ValueError as error:
             return Dialog.create(type=1, title='Luxury Lane', content='Uneli ste nepravilan email. Molimo unesite Vas email.', button_1='Unesi', button_2='Izlaz', on_response=email_input).show(player)
         
-        account.set_email(input)
         Dialog.create(type=1, title='Luxury Lane', content='Unesite Vase godine.', button_1='Unesi', button_2='Izlaz', on_response=handle_age).show(player)
 
     else:
-        account.set_gender(GENDER_FEMALE)
+        player.kick()
 
 @Player.using_pool
 def handle_age(player: Player, response: int, listitem: int, input: str):
     if response:
-        account = player.get_account()
+        account = player.account
         if not input.isdigit() or not (18 <= int(input) <= 70):
             return Dialog.create(type=1, title='Luxury Lane', content='Godine moraju biti pozitivan broj od 18-70...', button_1='Unesi', button_2='Izlaz', on_response=handle_age).show(player)
         
-        account.set_age(int(input))
+        account.age = int(input)
 
         try:
             skin = 30
             connection = Database.get_connection()
             cursor = Database.get_cursor()
-            cursor.execute("INSERT INTO account (account_name, account_email, account_password, account_gender, account_skin, account_age) VALUES (%s, %s, %s, %s, %s, %s)", (player.get_name(), account.get_email(), account.get_password(), account.get_gender(), skin, account.get_age(), ))
+            cursor.execute("INSERT INTO account (account_name, account_email, account_password, account_gender, account_skin, account_age) VALUES (%s, %s, %s, %s, %s, %s)", (player.get_name(), account.email, account.password, account.gender, skin, account.age, ))
             connection.commit()
             player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
-            account.set_sqlid(cursor.lastrowid)
+            account.sqlid = cursor.lastrowid
             player.toggle_spectating(False)
 
         except Exception as e:
@@ -127,8 +121,8 @@ def handle_age(player: Player, response: int, listitem: int, input: str):
 @Player.using_pool
 def login_response(player: Player, response: int, listitem: int, input: str):
     if response:
-        account = player.get_account()
-        if bcrypt.checkpw(input.encode("utf-8"), account.get_password().encode("utf-8")):
+        account = player.account
+        if bcrypt.checkpw(input.encode("utf-8"), account.password.encode("utf-8")):
             # Correct
             handle_spawn(player)
 
@@ -141,16 +135,16 @@ def login_response(player: Player, response: int, listitem: int, input: str):
 @Player.using_pool
 def handle_spawn(player: Player):
     
-    account = player.get_account()
-    account.set_password(None)
+    account = player.account
+    account.password = None
     cursor = Database.get_cursor(as_dictionary=True)
     cursor.execute("SELECT * FROM account WHERE account_name = %s", (player.get_name(),))
     row = cursor.fetchone()
     if row:
-        account.set_password(None) # Clear the password from data
-        account.set_sqlid(row['account_id'])
-        account.set_gender(row['account_gender'])
-        account.set_age(row['account_age'])
+        account.password = None # Clear the password from data
+        account.sqlid = row['account_id']
+        account.gender = row['account_gender']
+        account.age = row['account_age']
         skin = row['account_skin']
         player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
         player.toggle_spectating(False)
@@ -161,7 +155,7 @@ def handle_spawn(player: Player):
 @Player.using_pool
 def on_player_request_class(player: Player, classid: int):
     player.toggle_spectating(True)
-    player.set_account(Account())
+    player.account = Account()
     cursor = Database.get_cursor()
     cursor.execute("SELECT account_password FROM account WHERE account_name = %s", (player.get_name(),))
     row = cursor.fetchone()
@@ -170,8 +164,8 @@ def on_player_request_class(player: Player, classid: int):
         Dialog.create(type=3, title='Luxury Lane', content=f'Dobrodosli {player.get_name()}\nDrago nam je da ste dosli na nas server. Da biste nastavili, molimo Vas unesite Vasu zeljenu lozinku.', button_1='Unesi', button_2='Izlaz', on_response=register_response).show(player)
         pass
     else:
-        account = player.get_account()
-        account.set_password(row[0])
+        account = player.account
+        account.password = row[0]
         Dialog.create(type=3, title='Luxury Lane', content=f'Dobrodosli {player.get_name()}\nDrago nam je da ste dosli na nas server. Da biste nastavili, molimo Vas unesite Vasu sacuvanu lozinku.', button_1='Unesi', button_2='Izlaz', on_response=login_response).show(player)
     
     return 0
