@@ -1,5 +1,5 @@
 from samp import NO_TEAM
-from python.player import Player
+from python.player.player import Player
 from pysamp import send_client_message, toggle_player_spectating
 from pysamp.dialog import Dialog
 from python.database import Database
