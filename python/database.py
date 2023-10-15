@@ -62,10 +62,12 @@ class Database:
 @on_gamemode_init
 def on_start():
     Database.connect()
+    return 1
 
 
 @on_gamemode_exit
 def on_stop():
     Database.close_connection()
     print('Unloading gamemode')
+    return 1
     
