@@ -1,9 +1,11 @@
 from pysamp import *
 import python.database
-import python.player
+import python.player.permissions
+import python.player.player
 import python.account
 
 
 @on_gamemode_init
 def on_start():
     print('Initialized gamemode from PySAMP.')
+    return 1
