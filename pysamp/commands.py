@@ -45,7 +45,7 @@ class Command:
             for parameter in parameters
         ) else None
         self._usage_message = BaseMessage(
-            text=f'USAGE: {list(self.triggers)[0]} ' + ' '.join(
+            text=f'Koriscenje: {list(self.triggers)[0]} ' + ' '.join(
                 parameter.name
                 if parameter.default is inspect._empty
                 and parameter.kind != inspect.Parameter.VAR_POSITIONAL
