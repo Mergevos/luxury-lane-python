@@ -3,6 +3,7 @@ import importlib
 import sys
 from mysql.connector import Error
 from pysamp import *
+import pysamp.callbacks as callbacks
 
 class Database:
 
@@ -71,3 +72,4 @@ def on_stop():
     print('Unloading gamemode')
     return 1
     
+callbacks.hook()

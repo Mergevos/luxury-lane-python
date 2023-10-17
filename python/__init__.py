@@ -1,11 +1,13 @@
+import samp
 from pysamp import *
 import python.database
-import python.player.permissions
-import python.player.player
-import python.account.account
+import python.player
+import python.account
+import python.mute
+import pysamp.callbacks as callbacks
 
 
-@on_gamemode_init
-def on_start():
+def OnGameModeInit():
     print('Initialized gamemode from PySAMP.')
-    return 1
+
+callbacks.hook()
