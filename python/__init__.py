@@ -4,10 +4,7 @@ import python.database
 import python.player
 import python.account
 import python.mute
-import pysamp.callbacks as callbacks
 
-
-def OnGameModeInit():
+@on_gamemode_init
+def on_start():
     print('Initialized gamemode from PySAMP.')
-
-callbacks.hook()

@@ -45,9 +45,6 @@ class Account:
         else:
             raise ValueError("Invalid gender input")
     
-
-
-
 # Register
 @Player.using_pool
 def register_response(player: Player, response: int, listitem: int, input: str):
