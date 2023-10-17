@@ -57,7 +57,7 @@ For detailed information on how to use the commands and the system function, ref
 
 ## License
 
-- [MIT License]
+- [MIT License](https://github.com/Mergevos/luxury-lane-python/blob/master/LICENSE)
 
 ---
 
