@@ -13,7 +13,7 @@ class Player(BasePlayer):
     _pool: dict[int, BasePlayer] = {}
 
     account = None
-    role = None
+    role = None 
 
     def __init__(self, player_id):
         super().__init__(player_id)
