@@ -58,3 +58,4 @@ bans.json
 # pycache
 pysamp/__pycache__
 python/__pycache__
+python/*/__pycache__
