@@ -8,11 +8,11 @@ class Database:
 
     # Handles database connection
 
-    _host = "127.0.0.1"
-    _user = "root"
-    _port = "3306"
-    _password = ""
-    _database = "luxury-life"
+    host = "127.0.0.1"
+    user = "root"
+    port = "3306"
+    password = ""
+    database = "luxury-life"
 
     _connection = None
 
@@ -21,11 +21,11 @@ class Database:
     def connect(cls):
         try:
             cls._connection = mysql.connector.connect(
-                host=cls._host,
-                user=cls._user,
-                port=cls._port,
-                password=cls._password,
-                database=cls._database
+                host=cls.host,
+                user=cls.user,
+                port=cls.port,
+                password=cls.password,
+                database=cls.database
             )
             print('Connected to database')
         except Error as e:
@@ -37,16 +37,12 @@ class Database:
     
     # Gets connection
     @classmethod
-    def get_connection(cls):
+    @property
+    def connection(cls):
         if cls._connection is None:
             cls.connect()
 
         return cls._connection
-    
-    # Executes a query
-    @classmethod
-    def get_cursor(cls, as_dictionary=False):
-        return cls._connection.cursor(dictionary=as_dictionary)
 
     # Closes the connection
     @classmethod
