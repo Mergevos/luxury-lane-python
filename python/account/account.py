@@ -13,11 +13,11 @@ GENDER_FEMALE = 2
 
 @dataclass
 class Account:
-    sqlid = None
-    password = None
-    age = None
-    _gender = None
-    _email = None
+    sqlid: int = None
+    password: str = None
+    age: int = None
+    _gender: int = None
+    _email: str = None
 
     mute = False
     muted_until = None
@@ -102,8 +102,8 @@ def handle_age(player: Player, response: int, listitem: int, input: str):
 
         try:
             skin = 30
-            connection = Database.get_connection()
-            cursor = Database.get_cursor()
+            connection = Database.connection
+            cursor = connection.cursor()
             cursor.execute("INSERT INTO account (account_name, account_email, account_password, account_gender, account_skin, account_age) VALUES (%s, %s, %s, %s, %s, %s)", (player.get_name(), account.email, account.password, account.gender, skin, account.age, ))
             connection.commit()
             player.set_spawn_info(NO_TEAM, skin, 10.0, 10.0, 10.0, 10.0, 0, 0, 0, 0, 0, 0)
@@ -137,7 +137,8 @@ def handle_spawn(player: Player):
     
     account = player.account
     account.password = None
-    cursor = Database.get_cursor(as_dictionary=True)
+    connection = Database.connection
+    cursor = connection.cursor(dictionary=True)
     cursor.execute("SELECT * FROM account LEFT JOIN account_muted ON account.account_id = account_muted.account_mute_id WHERE account.account_name = %s", (player.get_name(),))
     
     row = cursor.fetchone()
@@ -162,13 +163,13 @@ def handle_spawn(player: Player):
 def on_player_request_class(player: Player, classid: int):
     player.toggle_spectating(True)
     player.account = Account()
-    cursor = Database.get_cursor()
+    connection = Database.connection
+    cursor = connection.cursor()
     cursor.execute("SELECT account_password FROM account WHERE account_name = %s", (player.get_name(),))
     row = cursor.fetchone()
     
     if row is None:
         Dialog.create(type=3, title='Luxury Lane', content=f'Dobrodosli {player.get_name()}\nDrago nam je da ste dosli na nas server. Da biste nastavili, molimo Vas unesite Vasu zeljenu lozinku.', button_1='Unesi', button_2='Izlaz', on_response=register_response).show(player)
-        pass
     else:
         account = player.account
         account.password = row[0]

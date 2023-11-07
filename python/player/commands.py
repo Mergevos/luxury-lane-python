@@ -11,6 +11,7 @@ SERBIAN_ERROR = BaseMessage(
 def player_has_permission(player: Player, role_key: str):
     if not player.role:
         return False
+        
     return player.role.class_roles.get(role_key)
 
 def has_permission(role: str):

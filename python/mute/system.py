@@ -14,14 +14,11 @@ def check_for_unmute():
     :return: None
     """
 
-    # Obtain the database connection
-    connection = Database.get_connection()
-    cursor = Database.get_cursor()
+    connection = Database.connection
+    cursor = connection.cursor()
 
-    # Delete mute records for players with expired mute durations
     cursor.execute('DELETE FROM account_muted WHERE account_mute_until IN (SELECT account_mute_until FROM account_muted WHERE account_mute_until < UNIX_TIMESTAMP(NOW()))')
     
-    # Delete mute records for players with expired mute durations
     connection.commit()
 
 @on_gamemode_init
@@ -34,5 +31,5 @@ def on_start():
 
     :return: None
     """
-    # Set a timer to call check_for_unmute every 10 seconds
+    
     set_timer(check_for_unmute, 10000, True)

@@ -1,4 +1,5 @@
-from pysamp.player import Player as BasePlayer
+from pysamp.player import Player as BasePlayer, get_player_name
+from samp import MAX_PLAYERS
 from functools import wraps
 
 MESSAGE_ERROR = 1
@@ -93,4 +94,10 @@ class Player(BasePlayer):
 def on_player_disconnect(player: Player, reason: int):
     player.remove_from_pool(player)
 
-# Messages
+# Get playerid from name
+def get_player_from_name(name: str) -> Player or None:
+    for i in range(MAX_PLAYERS):
+        if get_player_name(i) == name:
+            return Player.from_pool(i)
+
+    return None
